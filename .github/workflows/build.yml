@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # used to cache dependencies with a timeout
+      #  used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
         run: |
@@ -33,10 +33,22 @@ jobs:
         id: buildozer
         with:
           command: buildozer android debug
-          buildozer_version: master
+          buildozer_version: stable
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
+
+      - name: Running Gautam's Blog post workflow 
+        uses: gautamkrishnar/blog-post-workflow@master
+        id: blogpost_workflow
+        with:
+          comment_tag_name: ${{inputs.comment_tag_name}}
+          commit_message: "Updated Badge with latest number of articles"
+          feed_list: ${{inputs.feed_list}}
+          max_post_count: 1000000
+          output_only: true
+      - name: Echo the length
+        run: echo $(jq '. | length' /tmp/blog_post_workflow_output.json)
