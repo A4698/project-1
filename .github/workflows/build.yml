@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -40,3 +40,15 @@ jobs:
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
+
+      - name: Running Gautam's Blog post workflow 
+        uses: gautamkrishnar/blog-post-workflow@master
+        id: blogpost_workflow
+        with:
+          comment_tag_name: ${{inputs.comment_tag_name}}
+          commit_message: "Updated Badge with latest number of articles"
+          feed_list: ${{inputs.feed_list}}
+          max_post_count: 1000000
+          output_only: true
+      - name: Echo the length
+        run: echo $(jq '. | length' /tmp/blog_post_workflow_output.json)
